@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum ComboState
@@ -62,6 +63,8 @@ public class PlayerCombat : PlayerAbstract
             {
                 Controller.Animator.SetTrigger("Punch3");
             }
+            
+            SendDamage();
         }
 
         if (InputManager.Instance.attackKickInput)
@@ -91,7 +94,7 @@ public class PlayerCombat : PlayerAbstract
             {
                 Controller.Animator.SetTrigger("Kick2");
             }
-
+            SendDamage();
         }
     }
 
@@ -107,5 +110,20 @@ public class PlayerCombat : PlayerAbstract
                 currentComboTimer = defaultComboTimer;
             }
         }
+    }
+
+    private void SendDamage()
+    {
+
+        List<DamageReceiver> damageReceivers = Controller.CombatTester.cols?.Select(item => item.GetComponent<DamageReceiver>()).ToList();
+        foreach (var damageReceiver in damageReceivers)
+        {
+            if (damageReceiver != null)
+            {
+                
+                this.Controller.DamageSender.Send(damageReceiver.transform);
+            }
+        }
+     
     }
 }

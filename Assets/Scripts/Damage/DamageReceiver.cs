@@ -12,6 +12,10 @@ public abstract class DamageReceiver : GameMonoBehaviour
     [SerializeField] protected float maxHealthPoint = 10f;
     [SerializeField] protected Collider2D sphereCollider;
     [SerializeField] protected Rigidbody2D _rigidbody;
+    [SerializeField] protected Transform hitPos;
+
+    public Transform HitPos => hitPos;
+
 
     public float MaxHealthPoint => maxHealthPoint;
     public float HealthPoint => healthPoint;
@@ -21,8 +25,16 @@ public abstract class DamageReceiver : GameMonoBehaviour
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        this.LoadCollider();
-        this.LoadRigidBody();
+        //this.LoadCollider();
+        //this.LoadRigidBody();
+        this.LoadHitPos();
+    }
+
+    private void LoadHitPos()
+    {
+        if (this.hitPos != null) return;
+        this.hitPos = transform.parent.Find("HitPos");
+        Debug.Log(transform.name + "LoadHitPos", gameObject);
     }
 
     protected virtual void LoadRigidBody()

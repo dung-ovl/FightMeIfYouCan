@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
 
-public class CombatTester : GameMonoBehaviour
+public class CombatTester : PlayerAbstract
 {
     [SerializeField] private bool canAttack = true;
 

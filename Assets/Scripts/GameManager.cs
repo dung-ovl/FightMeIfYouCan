@@ -2,17 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : GameMonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private static GameManager instance;
+    public static GameManager Instance { get => instance; }
+
+    [SerializeField] protected Transform currentShip;
+    public Transform CurrentShip { get => currentShip; }
+
+    protected override void Awake()
     {
-        
+        base.Awake();
+        if (GameManager.instance != null) Debug.LogError("Only 1 GameCtrl allow to exist");
+        GameManager.instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void LoadComponents()
     {
-        
+        base.LoadComponents();
+        this.LoadCurrentShip();
+    }
+
+    protected virtual void LoadCurrentShip()
+    {
+        if (this.currentShip != null) return;
+        this.currentShip = GameObject.Find("Player").transform;
+        Debug.Log(transform.name + ": LoadPlayer", gameObject);
     }
 }
