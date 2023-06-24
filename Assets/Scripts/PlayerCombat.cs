@@ -129,6 +129,7 @@ public class PlayerCombat : PlayerAbstract
    
                 float damage = 1;
                 Vector3 hitOffSet = Vector3.zero;
+                bool isKnockDown = false;
                 switch (comboState)
                 {
                     case ComboState.PUNCH1:
@@ -142,6 +143,7 @@ public class PlayerCombat : PlayerAbstract
                     case ComboState.PUNCH3:
                         damage = 3;
                         hitOffSet.y += 0.6f;
+                        isKnockDown = true;
                         break;
                     case ComboState.KICK1:
                         damage = 2;
@@ -154,7 +156,14 @@ public class PlayerCombat : PlayerAbstract
                     default: break;
                 }
                 this.Controller.DamageSender.SetHitPosOffset(hitOffSet);
-                this.Controller.DamageSender.Send(damageReceiver.transform, damage);
+                this.Controller.DamageSender.SetDamage(damage);
+                this.Controller.DamageSender.Send(damageReceiver.transform);
+                
+                if (isKnockDown && !damageReceiver.IsDead)
+                {
+                    StartCoroutine(damageReceiver.KnockDown());
+                    
+                }
                 GameManager.Instance.SetCurrentEnemy(damageReceiver.transform);
                 isAttacking = false;
             }

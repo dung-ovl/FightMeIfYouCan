@@ -10,7 +10,7 @@ public abstract class DamageReceiver : GameMonoBehaviour
     [SerializeField] protected float baseMaxHealthPoint = 10f;
     [SerializeField] protected float maxHealthPointBonus = 0f;
     [SerializeField] protected float maxHealthPoint = 10f;
-    [SerializeField] protected Collider2D sphereCollider;
+    [SerializeField] protected Collider2D _collider;
     [SerializeField] protected Rigidbody2D _rigidbody;
     [SerializeField] protected Transform hitPos;
 
@@ -19,7 +19,9 @@ public abstract class DamageReceiver : GameMonoBehaviour
 
     public float MaxHealthPoint => maxHealthPoint;
     public float HealthPoint => healthPoint;
-    [SerializeField] protected bool isDead = false;
+    [SerializeField] public bool isDead = false;
+
+    public bool IsDead => isDead;
 
     protected bool isTakeDamage = true;
 
@@ -28,7 +30,7 @@ public abstract class DamageReceiver : GameMonoBehaviour
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        //this.LoadCollider();
+        this.LoadCollider();
         //this.LoadRigidBody();
         this.LoadHitPos();
     }
@@ -50,9 +52,8 @@ public abstract class DamageReceiver : GameMonoBehaviour
 
     protected virtual void LoadCollider()
     {
-        if (this.sphereCollider != null) return;
-        this.sphereCollider = GetComponent<Collider2D>();
-        this.sphereCollider.isTrigger = true; ;
+        if (this._collider != null) return;
+        this._collider = GetComponent<Collider2D>();
         Debug.Log(transform.name + "LoadCollider", gameObject);
     }
 
@@ -68,7 +69,7 @@ public abstract class DamageReceiver : GameMonoBehaviour
         this.Reborn();
     }
 
-    protected virtual void FixedUpdate()
+    protected virtual void Update()
     {
         this.CheckIsDead();
     }
@@ -90,17 +91,13 @@ public abstract class DamageReceiver : GameMonoBehaviour
         if (!isTakeDamage) return;
         this.healthPoint -= hp;
         if (this.healthPoint < 0) healthPoint = 0;
+        this.CheckIsDead();
 
-    }
-
-    protected virtual bool IsDead()
-    {
-        return this.healthPoint <= 0;
     }
 
     protected virtual void CheckIsDead()
     {
-        if (!this.IsDead()) return;
+        if (!(this.healthPoint <= 0)) return;
         this.isDead = true;
     }
 
@@ -109,5 +106,15 @@ public abstract class DamageReceiver : GameMonoBehaviour
         this.maxHealthPoint = this.baseMaxHealthPoint + this.maxHealthPointBonus;
     }
 
+    protected virtual void SetColliderActive(bool isActive)
+    {
+        this._collider.enabled = isActive;
+    }
+
     protected abstract void OnDead();
+
+    public virtual IEnumerator KnockDown()
+    {
+        yield return null;
+    }
 }

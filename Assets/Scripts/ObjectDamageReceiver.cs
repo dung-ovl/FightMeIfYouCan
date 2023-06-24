@@ -7,7 +7,7 @@ using UnityEngine;
 public abstract class ObjectDamageReceiver : DamageReceiver
 {
 
-    [SerializeField] private ObjectController objectController;
+    [SerializeField] protected ObjectController objectController;
 
     private float timeRemainOnDeath = 3f;
 
@@ -22,32 +22,18 @@ public abstract class ObjectDamageReceiver : DamageReceiver
         this.objectController = this.transform.parent.GetComponent<ObjectController>();
     }
 
-    protected void OnAnimationGetHit()
-    {
-        this.objectController.Animator.SetTrigger("GetHit");
-    }
 
     protected void OnAnimationDead()
     {
         this.objectController.Animator.SetTrigger("Death");
     }
 
-    public override void DeductHealthPoint(float hp)
-    {
-        base.DeductHealthPoint(hp);
-        if (this.isDead)
-        {
-            this.OnDead();
-        }
-        
-        this.OnAnimationGetHit();
-    }
 
     protected override void OnDead()
     {
         this.OnAnimationDead();
         this.isTakeDamage = false;
-        //this.objectController.DamageReceiver.gameObject.SetActive(false);
+        this.SetColliderActive(false);
         this.StartDeathEffect();
     }
 
@@ -61,6 +47,7 @@ public abstract class ObjectDamageReceiver : DamageReceiver
 
         bool isVisible = true;
         float deathFlashTimer = 0f;
+        yield return new WaitForSeconds(1f);
         while (deathFlashTimer < timeRemainOnDeath)
         {
             deathFlashTimer += 0.1f;

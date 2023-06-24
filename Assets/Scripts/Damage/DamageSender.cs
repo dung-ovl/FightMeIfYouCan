@@ -49,4 +49,9 @@ public class DamageSender : GameMonoBehaviour
     {
         this.hitPosOffset = transform;
     }
+    
+    public virtual void SetDamage(float damage)
+    {
+        this.damage = damage;
+    }
 }
