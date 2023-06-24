@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : GameMonoBehaviour
+public class ObjectController : GameMonoBehaviour
 {
     [SerializeField] Animator animator;
 
@@ -16,6 +16,14 @@ public class PlayerController : GameMonoBehaviour
     [SerializeField] DamageSender damageSender;
 
     public DamageSender DamageSender => damageSender;
+
+    [SerializeField] DamageReceiver damageReceiver;
+
+    public DamageReceiver DamageReceiver => damageReceiver;
+
+    [SerializeField] Renderer sprite;
+
+    public Renderer Sprite => sprite;
     // Start is called before the first frame update
     protected override void LoadComponents()
     {
@@ -23,6 +31,18 @@ public class PlayerController : GameMonoBehaviour
         this.LoadAnimator();
         this.LoadCombatTester();
         this.LoadDamageSender();
+        this.LoadDamageReceiver();
+        this.LoadSpriteRenderer();
+    }
+
+    private void LoadSpriteRenderer()
+    {
+        this.sprite = this.GetComponentInChildren<Renderer>();
+    }
+
+    private void LoadDamageReceiver()
+    {
+        this.damageReceiver = this.GetComponentInChildren<DamageReceiver>();
     }
 
     private void LoadDamageSender()

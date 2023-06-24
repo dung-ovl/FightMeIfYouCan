@@ -10,6 +10,9 @@ public class GameManager : GameMonoBehaviour
     [SerializeField] protected Transform currentShip;
     public Transform CurrentShip { get => currentShip; }
 
+    [SerializeField] protected Transform currentEnemy;
+    public Transform CurrentEnemy { get => currentEnemy; }
+
     protected override void Awake()
     {
         base.Awake();
@@ -28,5 +31,10 @@ public class GameManager : GameMonoBehaviour
         if (this.currentShip != null) return;
         this.currentShip = GameObject.Find("Player").transform;
         Debug.Log(transform.name + ": LoadPlayer", gameObject);
+    }
+
+    public virtual void SetCurrentEnemy(Transform enemy)
+    {
+        this.currentEnemy = enemy;
     }
 }

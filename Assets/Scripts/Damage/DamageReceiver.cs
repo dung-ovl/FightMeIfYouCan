@@ -20,7 +20,10 @@ public abstract class DamageReceiver : GameMonoBehaviour
     public float MaxHealthPoint => maxHealthPoint;
     public float HealthPoint => healthPoint;
     [SerializeField] protected bool isDead = false;
-    [SerializeField] protected string onDeadFXName = "E1_Detruction";
+
+    protected bool isTakeDamage = true;
+
+    public bool IsTakeDamage => isTakeDamage;
 
     protected override void LoadComponents()
     {
@@ -84,6 +87,7 @@ public abstract class DamageReceiver : GameMonoBehaviour
 
     public virtual void DeductHealthPoint(float hp)
     {
+        if (!isTakeDamage) return;
         this.healthPoint -= hp;
         if (this.healthPoint < 0) healthPoint = 0;
 
@@ -98,7 +102,6 @@ public abstract class DamageReceiver : GameMonoBehaviour
     {
         if (!this.IsDead()) return;
         this.isDead = true;
-        this.OnDead();
     }
 
     protected virtual void SetupMaxHealth()

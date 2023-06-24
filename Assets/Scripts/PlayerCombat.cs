@@ -23,6 +23,8 @@ public class PlayerCombat : PlayerAbstract
 
     private ComboState currentComboState;
 
+    private bool isAttacking = false;
+
     protected override void Start()
     {
         base.Start();
@@ -33,6 +35,7 @@ public class PlayerCombat : PlayerAbstract
     private void Update()
     {
         ComboAttack();
+        SendDamage(currentComboState);
         ResetComboState();
     }
 
@@ -63,8 +66,9 @@ public class PlayerCombat : PlayerAbstract
             {
                 Controller.Animator.SetTrigger("Punch3");
             }
+
+            isAttacking = true;
             
-            SendDamage();
         }
 
         if (InputManager.Instance.attackKickInput)
@@ -94,7 +98,8 @@ public class PlayerCombat : PlayerAbstract
             {
                 Controller.Animator.SetTrigger("Kick2");
             }
-            SendDamage();
+
+            isAttacking = true;
         }
     }
 
@@ -108,20 +113,50 @@ public class PlayerCombat : PlayerAbstract
                 currentComboState = ComboState.NONE;
                 activateTimerToReset = false;
                 currentComboTimer = defaultComboTimer;
+                isAttacking = false;
             }
         }
     }
 
-    private void SendDamage()
+    private void SendDamage(ComboState comboState)
     {
-
+        if (!isAttacking) return;
         List<DamageReceiver> damageReceivers = Controller.CombatTester.cols?.Select(item => item.GetComponent<DamageReceiver>()).ToList();
         foreach (var damageReceiver in damageReceivers)
         {
             if (damageReceiver != null)
             {
-                
-                this.Controller.DamageSender.Send(damageReceiver.transform);
+   
+                float damage = 1;
+                Vector3 hitOffSet = Vector3.zero;
+                switch (comboState)
+                {
+                    case ComboState.PUNCH1:
+                        damage = 1;
+                        hitOffSet.y += 0.5f;
+                        break;
+                    case ComboState.PUNCH2:
+                        damage = 2;
+                        hitOffSet.y += 0.5f;
+                        break;
+                    case ComboState.PUNCH3:
+                        damage = 3;
+                        hitOffSet.y += 0.6f;
+                        break;
+                    case ComboState.KICK1:
+                        damage = 2;
+                        hitOffSet.y -= 0.2f;
+                        break;
+                    case ComboState.KICK2:
+                        damage = 3;
+                        hitOffSet.y += 0.8f;
+                        break;
+                    default: break;
+                }
+                this.Controller.DamageSender.SetHitPosOffset(hitOffSet);
+                this.Controller.DamageSender.Send(damageReceiver.transform, damage);
+                GameManager.Instance.SetCurrentEnemy(damageReceiver.transform);
+                isAttacking = false;
             }
         }
      
