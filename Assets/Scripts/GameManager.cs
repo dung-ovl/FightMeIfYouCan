@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,11 +8,26 @@ public class GameManager : GameMonoBehaviour
     private static GameManager instance;
     public static GameManager Instance { get => instance; }
 
+    [SerializeField] protected Camera mainCamera;
+    public Camera MainCamera { get => mainCamera; }
+
     [SerializeField] protected Transform currentShip;
     public Transform CurrentShip { get => currentShip; }
 
     [SerializeField] protected Transform currentEnemy;
     public Transform CurrentEnemy { get => currentEnemy; }
+
+    public  bool IsPlayerDead { get => this.currentShip == null; }
+
+    public float m_MaxX { get; private set; }
+
+    public float m_MinX { get; private set; }
+
+    public float m_MaxY { get; private set; }
+
+    public float m_MinY { get; private set; }
+
+    [SerializeField] protected float limitOffset = 0;
 
     protected override void Awake()
     {
@@ -24,6 +40,23 @@ public class GameManager : GameMonoBehaviour
     {
         base.LoadComponents();
         this.LoadCurrentShip();
+        this.LoadCamera();
+        this.LoadLimitScreen();
+    }
+
+    protected virtual void LoadCamera()
+    {
+        if (this.mainCamera != null) return;
+        this.mainCamera = GameManager.FindObjectOfType<Camera>();
+        Debug.Log(transform.name + ": LoadCamera", gameObject);
+    }
+
+    private void LoadLimitScreen()
+    {
+        this.m_MinX = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).x + limitOffset;
+        this.m_MaxX = this.mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x - limitOffset;
+        this.m_MinY = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).y + limitOffset;
+        this.m_MaxY = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 1, 0)).y - limitOffset;
     }
 
     protected virtual void LoadCurrentShip()

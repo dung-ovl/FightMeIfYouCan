@@ -11,7 +11,7 @@ public enum ComboState
     PUNCH2,
     PUNCH3,
     KICK1,
-    KICK2,
+    KICK2
 }
 
 public class PlayerCombat : PlayerAbstract
@@ -24,6 +24,8 @@ public class PlayerCombat : PlayerAbstract
     private ComboState currentComboState;
 
     private bool isAttacking = false;
+    private bool canAttack = true;
+    
 
     protected override void Start()
     {
@@ -41,8 +43,11 @@ public class PlayerCombat : PlayerAbstract
 
     private void ComboAttack()
     {
-        if (InputManager.Instance.attackPunchInput)
+        if (!this.canAttack) return;
+        PlayerController playerController = this.Controller as PlayerController;
+        if (InputManager.Instance.attackPunchInput && !playerController.ItemLooter.HasItemCanPickup)
         {
+            
             if (currentComboState == ComboState.PUNCH3 || currentComboState == ComboState.KICK1 || currentComboState == ComboState.KICK2)
             {
                 return;
@@ -66,15 +71,17 @@ public class PlayerCombat : PlayerAbstract
             {
                 Controller.Animator.SetTrigger("Punch3");
             }
-
+            this.Controller.StateManager.SetState(ObjectState.Attack);
             isAttacking = true;
             
         }
 
         if (InputManager.Instance.attackKickInput)
         {
+            this.Controller.StateManager.SetState(ObjectState.Attack);
             if (currentComboState == ComboState.KICK2 || currentComboState == ComboState.PUNCH3)
             {
+                
                 return;
             }
             if (currentComboState == ComboState.NONE || currentComboState == ComboState.PUNCH1 || currentComboState == ComboState.PUNCH2)
@@ -98,7 +105,7 @@ public class PlayerCombat : PlayerAbstract
             {
                 Controller.Animator.SetTrigger("Kick2");
             }
-
+            this.Controller.StateManager.SetState(ObjectState.Attack);
             isAttacking = true;
         }
     }
@@ -126,7 +133,6 @@ public class PlayerCombat : PlayerAbstract
         {
             if (damageReceiver != null)
             {
-   
                 float damage = 1;
                 Vector3 hitOffSet = Vector3.zero;
                 bool isKnockDown = false;
@@ -152,6 +158,7 @@ public class PlayerCombat : PlayerAbstract
                     case ComboState.KICK2:
                         damage = 3;
                         hitOffSet.y += 0.8f;
+                        isKnockDown = true;
                         break;
                     default: break;
                 }

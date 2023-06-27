@@ -12,6 +12,7 @@ public class InputManager : MonoBehaviour
     public bool jumpingInput = false;
     public bool attackPunchInput = false;
     public bool attackKickInput = false;
+    public bool pickUpInput = false;
 
     private void Awake()
     {
@@ -28,6 +29,7 @@ public class InputManager : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
         attackPunchInput = Input.GetKeyDown(KeyCode.J);
+        pickUpInput = Input.GetKeyDown(KeyCode.J);
         attackKickInput = Input.GetKeyDown(KeyCode.K);
     }
 }

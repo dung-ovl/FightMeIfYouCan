@@ -23,7 +23,17 @@ public class ObjectController : GameMonoBehaviour
 
     [SerializeField] Renderer sprite;
 
+    [SerializeField] StateManager stateManager;
+
+    public StateManager StateManager => stateManager;
+
+
+    [SerializeField] ObjectMovement movement;
+
+    public ObjectMovement Movement => movement;
     public Renderer Sprite => sprite;
+
+
     // Start is called before the first frame update
     protected override void LoadComponents()
     {
@@ -33,6 +43,23 @@ public class ObjectController : GameMonoBehaviour
         this.LoadDamageSender();
         this.LoadDamageReceiver();
         this.LoadSpriteRenderer();
+        this.LoadStateManager();
+        this.LoadObjectMovement();
+    }
+
+    private void Update()
+    {
+
+    }
+
+    private void LoadObjectMovement()
+    {
+        this.movement = this.GetComponentInChildren<ObjectMovement>();
+    }
+
+    private void LoadStateManager()
+    {
+        this.stateManager = this.GetComponentInChildren<StateManager>();
     }
 
     private void LoadSpriteRenderer()

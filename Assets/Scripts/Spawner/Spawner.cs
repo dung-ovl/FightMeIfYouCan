@@ -18,7 +18,6 @@ public class Spawner : GameMonoBehaviour
         this.LoadHolder();
     }
 
-
     protected virtual void LoadHolder()
     {
         if (this.holder != null) return;

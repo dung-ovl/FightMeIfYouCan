@@ -3,18 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : PlayerAbstract
+public class PlayerMovement : ObjectMovement
 {
-    [SerializeField] private float hSpeed = 5f;
-    [SerializeField] private float vSpeed = 3f;
-    [SerializeField] Rigidbody2D baseRigid;
-    [SerializeField] Rigidbody2D charRigid;
-    [SerializeField] bool canMove = true;
 
-    private bool isJumping = false;
+    
+    [SerializeField] Rigidbody2D charRigid;
+
     [SerializeField] private bool isGrounded = true;
-    private bool facingRight = true;
-    private Vector2 targetVelocity;
+
+    
 
     [SerializeField] private Transform jumpDetector;
     [SerializeField] private float detectionDistance;
@@ -28,48 +25,33 @@ public class PlayerMovement : PlayerAbstract
     }
 
     // Update is called once per frame
-    protected void Update()
+    protected override void Update()
     {
+        base.Update();
         this.HandleMovement();
         //this.HandleJump();
     }
-
-    protected override void LoadComponents()
+    protected override void Move()
     {
-        base.LoadComponents();
-        this.LoadRigidbody();
-    }
+        float hInput = InputManager.Instance.horizontalInput;
+        float vInput = InputManager.Instance.verticalInput;
 
-    private void LoadRigidbody()
-    {
-        this.baseRigid = transform.parent.GetComponent<Rigidbody2D>();
-    }
+        targetVelocity = new Vector2(hInput * hSpeed, vInput * vSpeed);
 
-    protected virtual void HandleMovement()
-    {
-        if (canMove)
+        baseRigid.velocity = targetVelocity;
+
+        bool isMoving = targetVelocity.magnitude != 0;
+        this.SetOnWalkAnimation(isMoving);
+
+        if (hInput > 0 && !facingRight)
         {
-            float hInput = InputManager.Instance.horizontalInput;
-            float vInput = InputManager.Instance.verticalInput;
-
-            targetVelocity = new Vector2(hInput * hSpeed, vInput * vSpeed);
-
-            baseRigid.velocity = targetVelocity;
-
-            bool isMoving = targetVelocity.magnitude != 0;
-            this.SetOnWalkAnimation(isMoving);
-
-            if (hInput > 0 && !facingRight)
-            {
-                this.Flip();
-            }
-            else if (hInput < 0 && facingRight)
-            {
-                this.Flip();
-            }
+            this.Flip();
+        }
+        else if (hInput < 0 && facingRight)
+        {
+            this.Flip();
         }
     }
-
     protected virtual void HandleJump()
     {
         this.DetectGrounded();
@@ -91,13 +73,7 @@ public class PlayerMovement : PlayerAbstract
         }
     }
 
-    private void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 scale = transform.parent.localScale;
-        scale.x *= -1;
-        transform.parent.localScale = scale;
-    }
+
 
     private void DetectGrounded()
     {
@@ -105,10 +81,7 @@ public class PlayerMovement : PlayerAbstract
         this.isGrounded = hit.collider != null;
     }
 
-    protected virtual void SetOnWalkAnimation(bool active)
-    {
-        this.Controller.Animator.SetBool("isMoving", active);
-    }
+
 
     /*rivate void OnDrawGizmos()
     {

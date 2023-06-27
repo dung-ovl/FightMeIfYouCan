@@ -17,35 +17,28 @@ public class EnemyDamageReceiver : ObjectDamageReceiver
         this.objectController.Animator.SetTrigger("StandUp");
     }
 
-    public void OnAnimationGetHit()
-    {
-        this.objectController.Animator.SetTrigger("GetHit");
-    }
-
     public override IEnumerator KnockDown()
     {
+        this.objectController.StateManager.SetState(ObjectState.KnockDown);
         this.OnAnimationKnockDown();
         this.SetColliderActive(false);
         yield return new WaitForSeconds(knockDownTime);
-        this.StandUp();
+        StartCoroutine(this.StandUp());
+        
     }
 
-   
-
-
-    public void StandUp()
+    public IEnumerator StandUp()
     {
+        this.objectController.StateManager.SetState(ObjectState.StandUp);
         this.OnAnimationStandUp();
+        yield return new WaitForSeconds(1f);
         this.SetColliderActive(true);
     }
 
-    public override void DeductHealthPoint(float hp)
+    protected override IEnumerator FlashDeadthCoroutine()
     {
-        base.DeductHealthPoint(hp);
-        if (this.isDead)
-        {
-            this.OnDead();
-        }
-        this.OnAnimationGetHit();
-    }
+        yield return base.FlashDeadthCoroutine();
+        EnemySpawner.Instance.Despawn(this.transform.parent);
+    }    
+
 }

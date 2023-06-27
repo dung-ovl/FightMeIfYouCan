@@ -28,12 +28,17 @@ public abstract class ObjectDamageReceiver : DamageReceiver
         this.objectController.Animator.SetTrigger("Death");
     }
 
+    public void OnAnimationGetHit()
+    {
+        this.objectController.Animator.SetTrigger("GetHit");
+    }
 
     protected override void OnDead()
     {
         this.OnAnimationDead();
         this.isTakeDamage = false;
         this.SetColliderActive(false);
+        this.objectController.StateManager.SetState(ObjectState.Die);
         this.StartDeathEffect();
     }
 
@@ -42,7 +47,7 @@ public abstract class ObjectDamageReceiver : DamageReceiver
         StartCoroutine(FlashDeadthCoroutine());
     }
 
-    private IEnumerator FlashDeadthCoroutine()
+    protected virtual IEnumerator FlashDeadthCoroutine()
     {
 
         bool isVisible = true;
@@ -55,6 +60,18 @@ public abstract class ObjectDamageReceiver : DamageReceiver
             isVisible = !isVisible;
             yield return new WaitForSeconds(0.1f);
         }
-        GameObject.Destroy(transform.parent.gameObject);
+        
+    }
+
+    public override void DeductHealthPoint(float hp)
+    {
+        base.DeductHealthPoint(hp);
+        if (this.isDead)
+        {
+            this.OnDead();
+            return;
+        }
+        this.OnAnimationGetHit();
+        this.objectController.StateManager.SetState(ObjectState.Hurt);
     }
 }

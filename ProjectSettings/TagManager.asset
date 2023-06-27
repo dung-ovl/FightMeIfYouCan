@@ -13,8 +13,8 @@ TagManager:
   - UI
   - Base
   - Enemy
-  - 
-  - 
+  - Item
+  - Player
   - 
   - 
   - 
@@ -46,4 +46,7 @@ TagManager:
     locked: 0
   - name: Effect
     uniqueID: 4069959713
+    locked: 0
+  - name: Item
+    uniqueID: 1614557017
     locked: 0

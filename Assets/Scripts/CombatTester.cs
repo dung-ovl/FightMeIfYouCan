@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
 
-public class CombatTester : PlayerAbstract
+public class CombatTester : GameMonoBehaviour
 {
     [SerializeField] private bool canAttack = true;
 
@@ -35,6 +35,6 @@ public class CombatTester : PlayerAbstract
     {
         ContactFilter2D contactFilter2D = new ContactFilter2D();
         contactFilter2D.SetLayerMask(enemyLayer);
-        inLineCollider.OverlapCollider(contactFilter2D, cols);
+        Physics2D.OverlapCollider(inLineCollider ,contactFilter2D, cols);
     }
 }

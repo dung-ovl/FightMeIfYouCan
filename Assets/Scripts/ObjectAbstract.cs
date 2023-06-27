@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerAbstract : GameMonoBehaviour
+public class ObjectAbstract : GameMonoBehaviour
 {
-    [SerializeField] PlayerController controller;
+    [SerializeField] ObjectController controller;
 
-    public PlayerController Controller => controller;
+    public ObjectController Controller => controller;
 
     protected override void LoadComponents()
     {
@@ -18,6 +18,6 @@ public class PlayerAbstract : GameMonoBehaviour
 
     private void LoadController()
     {
-        this.controller = transform.parent.GetComponent<PlayerController>();
+        this.controller = transform.parent.GetComponent<ObjectController>();
     }
 }
