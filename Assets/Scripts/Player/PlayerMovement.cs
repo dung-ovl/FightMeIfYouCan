@@ -6,12 +6,12 @@ using UnityEngine;
 public class PlayerMovement : ObjectMovement
 {
 
-    
+
     [SerializeField] Rigidbody2D charRigid;
 
     [SerializeField] private bool isGrounded = true;
 
-    
+
 
     [SerializeField] private Transform jumpDetector;
     [SerializeField] private float detectionDistance;
@@ -19,6 +19,9 @@ public class PlayerMovement : ObjectMovement
     [SerializeField] private float jumpingGravityScale;
     [SerializeField] private float fallingGravityScale;
     [SerializeField] private float jumpVal = 10f;
+
+    private float movingSoundTimer = 0f;
+    private float movingSoundDelay = 2f;
     protected override void Start()
     {
         base.Start();
@@ -38,10 +41,32 @@ public class PlayerMovement : ObjectMovement
 
         targetVelocity = new Vector2(hInput * hSpeed, vInput * vSpeed);
 
+        float clampedX = Mathf.Clamp(transform.parent.position.x, GameManager.Instance.m_MinX, GameManager.Instance.m_MaxX);
+        float clampedY = Mathf.Clamp(transform.parent.position.y, GameManager.Instance.m_MinY, GameManager.Instance.m_MaxY);
+
+        if (clampedX != transform.parent.position.x)
+        {
+            targetVelocity.x = 0;
+            transform.parent.position = new Vector3(clampedX, transform.parent.position.y, transform.parent.position.z);
+        }
+
+        if (clampedY != transform.parent.position.y)
+        {
+            targetVelocity.y = 0;
+            transform.parent.position = new Vector3(transform.parent.position.x, clampedY, transform.parent.position.z);
+        }
+
         baseRigid.velocity = targetVelocity;
 
         bool isMoving = targetVelocity.magnitude != 0;
+
         this.SetOnWalkAnimation(isMoving);
+        movingSoundTimer += Time.deltaTime;
+        if (isMoving && movingSoundTimer >= movingSoundDelay)
+        {
+            this.PlayFootStep();
+            movingSoundTimer = 0f;
+        }
 
         if (hInput > 0 && !facingRight)
         {
@@ -81,7 +106,10 @@ public class PlayerMovement : ObjectMovement
         this.isGrounded = hit.collider != null;
     }
 
-
+    private void PlayFootStep()
+    {
+        SoundManager.Instance.PlaySound("Footstep" + UnityEngine.Random.Range(1, 6));
+    }
 
     /*rivate void OnDrawGizmos()
     {

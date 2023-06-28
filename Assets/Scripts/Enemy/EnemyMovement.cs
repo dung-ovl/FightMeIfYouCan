@@ -6,16 +6,27 @@ using UnityEngine;
 public class EnemyMovement : ObjectMovement
 {
     [SerializeField] private Transform target;
+    [SerializeField] private Vector2 distanceRange;
 
     protected override void Move()
     {
+        if (target == null) return;
+        Vector2 vectorTarget = (target.position - transform.parent.position);
 
-        Vector2 vectorTarget = (target.position - transform.parent.position).normalized;
+        if (Math.Abs(vectorTarget.x) <= distanceRange.x)
+        {
+            vectorTarget.x = 0;
+        }
 
-        float hInput = vectorTarget.x;
-        float vInput = vectorTarget.y;
+        if (Math.Abs(vectorTarget.y) <= distanceRange.y)
+        {
+            vectorTarget.y = 0;
+        }
+        Vector2 vectorTargetNol = vectorTarget.normalized;
+        float hInput = vectorTargetNol.x;
+        float vInput = vectorTargetNol.y;
 
-        targetVelocity = new Vector2(vectorTarget.x * hSpeed, vectorTarget.y * vSpeed);
+        targetVelocity = new Vector2(hInput * hSpeed, vInput * vSpeed);
 
         baseRigid.velocity = targetVelocity;
 

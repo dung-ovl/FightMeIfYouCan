@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : GameMonoBehaviour
 {
@@ -27,7 +28,8 @@ public class GameManager : GameMonoBehaviour
 
     public float m_MinY { get; private set; }
 
-    [SerializeField] protected float limitOffset = 0;
+    [SerializeField] protected float limitOffsetX = 1f;
+    [SerializeField] protected float limitOffsetY = 0.4f;
 
     protected override void Awake()
     {
@@ -44,6 +46,10 @@ public class GameManager : GameMonoBehaviour
         this.LoadLimitScreen();
     }
 
+    private void Update()
+    {
+        LoadLimitScreen();
+    }
     protected virtual void LoadCamera()
     {
         if (this.mainCamera != null) return;
@@ -53,10 +59,10 @@ public class GameManager : GameMonoBehaviour
 
     private void LoadLimitScreen()
     {
-        this.m_MinX = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).x + limitOffset;
-        this.m_MaxX = this.mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x - limitOffset;
-        this.m_MinY = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).y + limitOffset;
-        this.m_MaxY = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 1, 0)).y - limitOffset;
+        this.m_MinX = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).x + limitOffsetX;
+        this.m_MaxX = this.mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x - limitOffsetX;
+        this.m_MinY = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).y + limitOffsetY;
+        this.m_MaxY = this.mainCamera.ViewportToWorldPoint(new Vector3(0, 0.5f, 0)).y - limitOffsetY;
     }
 
     protected virtual void LoadCurrentShip()
@@ -69,5 +75,10 @@ public class GameManager : GameMonoBehaviour
     public virtual void SetCurrentEnemy(Transform enemy)
     {
         this.currentEnemy = enemy;
+    }
+
+    public virtual void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

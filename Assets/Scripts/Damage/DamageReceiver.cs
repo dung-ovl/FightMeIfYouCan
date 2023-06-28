@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Video;
 
 public abstract class DamageReceiver : GameMonoBehaviour
 {
@@ -23,10 +25,15 @@ public abstract class DamageReceiver : GameMonoBehaviour
 
     public bool IsDead => isDead;
 
-    protected bool isTakeDamage = true;
+    [SerializeField] protected bool isTakeDamage = true;
 
     public bool IsTakeDamage => isTakeDamage;
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        this.Reborn();
+    }
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -63,12 +70,6 @@ public abstract class DamageReceiver : GameMonoBehaviour
         this.Reborn();
     }
 
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        this.Reborn();
-    }
-
     protected virtual void Update()
     {
         this.CheckIsDead();
@@ -78,6 +79,8 @@ public abstract class DamageReceiver : GameMonoBehaviour
         this.SetupMaxHealth();
         this.healthPoint = this.maxHealthPoint;
         this.isDead = false;
+        this.isTakeDamage = true;
+        this.SetColliderActive(true);
     }
 
     public virtual void AddHealthPoint(float hp)

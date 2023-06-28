@@ -24,7 +24,7 @@ public class PlayerCombat : PlayerAbstract
     private ComboState currentComboState;
 
     private bool isAttacking = false;
-    private bool canAttack = true;
+    [SerializeField] private bool canAttack = true;
     
 
     protected override void Start()
@@ -36,9 +36,22 @@ public class PlayerCombat : PlayerAbstract
 
     private void Update()
     {
+        CheckCanAttack();
         ComboAttack();
         SendDamage(currentComboState);
         ResetComboState();
+    }
+
+    private void CheckCanAttack()
+    {
+        if (this.Controller.StateManager.isInteracting)
+        {
+            canAttack = false;
+        }
+        else
+        {
+            canAttack = true;
+        }
     }
 
     private void ComboAttack()
@@ -72,6 +85,7 @@ public class PlayerCombat : PlayerAbstract
                 Controller.Animator.SetTrigger("Punch3");
             }
             this.Controller.StateManager.SetState(ObjectState.Attack);
+            SoundManager.Instance.PlaySound("Attack");
             isAttacking = true;
             
         }
@@ -106,6 +120,7 @@ public class PlayerCombat : PlayerAbstract
                 Controller.Animator.SetTrigger("Kick2");
             }
             this.Controller.StateManager.SetState(ObjectState.Attack);
+            SoundManager.Instance.PlaySound("Attack");
             isAttacking = true;
         }
     }
@@ -136,42 +151,48 @@ public class PlayerCombat : PlayerAbstract
                 float damage = 1;
                 Vector3 hitOffSet = Vector3.zero;
                 bool isKnockDown = false;
+                string audioName = "Punch1"; 
                 switch (comboState)
                 {
                     case ComboState.PUNCH1:
                         damage = 1;
                         hitOffSet.y += 0.5f;
+                        audioName = "Punch1";
                         break;
                     case ComboState.PUNCH2:
                         damage = 2;
                         hitOffSet.y += 0.5f;
+                        audioName = "Punch2";
                         break;
                     case ComboState.PUNCH3:
                         damage = 3;
                         hitOffSet.y += 0.6f;
                         isKnockDown = true;
+                        audioName = "Punch3";
                         break;
                     case ComboState.KICK1:
                         damage = 2;
                         hitOffSet.y -= 0.2f;
+                        audioName = "Kick1";
                         break;
                     case ComboState.KICK2:
                         damage = 3;
                         hitOffSet.y += 0.8f;
                         isKnockDown = true;
+                        audioName = "Kick2";
                         break;
                     default: break;
                 }
                 this.Controller.DamageSender.SetHitPosOffset(hitOffSet);
                 this.Controller.DamageSender.SetDamage(damage);
+                GameManager.Instance.SetCurrentEnemy(damageReceiver.transform.parent);
                 this.Controller.DamageSender.Send(damageReceiver.transform);
-                
+                SoundManager.Instance.PlaySound(audioName);
                 if (isKnockDown && !damageReceiver.IsDead)
                 {
                     StartCoroutine(damageReceiver.KnockDown());
                     
                 }
-                GameManager.Instance.SetCurrentEnemy(damageReceiver.transform);
                 isAttacking = false;
             }
         }

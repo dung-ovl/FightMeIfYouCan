@@ -44,6 +44,7 @@ public class ItemLooter : ObjectAbstract
                 {
                     this.Controller.DamageReceiver.AddHealthPoint(2f);
                 }
+                SoundManager.Instance.PlaySoundOneShot("Pickup", 0.3f);
                 itemPickupable.Picked();
             }
         }

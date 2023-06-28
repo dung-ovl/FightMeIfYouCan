@@ -6,7 +6,7 @@ using UnityEngine;
 public class DespawnByDistance : Despawn
 {
     // Start is called before the first frame update
-    [SerializeField] protected float disLimit = 3f;
+    [SerializeField] protected float disLimit = 20f;
     [SerializeField] protected float distance = 0f;
     [SerializeField] protected Transform target;
 

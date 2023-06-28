@@ -4,21 +4,32 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyCombat : EnemyAbstract
 {
-    [SerializeField] private float attackDelay = 2f;
-
+    [SerializeField] private float attackDelay = 1.5f;
+    [SerializeField] private float attackTimer = 0f;
+    [SerializeField] private Vector2 attackRange;
+    [SerializeField] private Transform attackTarget;
 
     private bool isAttacking = false;
     private bool canAttack = true;
 
     protected override void Start()
     {
-        this.InvokeRepeating("StartAttack", 0f, 5f);
+        base.Start();
+        attackTarget = GameManager.Instance.CurrentShip;
     }
 
     private void Update()
+    {
+        this.SendDamage();
+        this.CheckCanAttack();
+        this.AttackTargetOnDistance();
+    }
+
+    private void CheckCanAttack()
     {
         if (this.Controller.StateManager.isInteracting)
         {
@@ -28,18 +39,20 @@ public class EnemyCombat : EnemyAbstract
         {
             canAttack = true;
         }
-        this.SendDamage();
     }
 
-    public void StartAttack()
+    private void AttackTargetOnDistance()
     {
-        StartCoroutine(AttackAfterDelay());
-    }
+        if (attackTarget == null) return;
+        Vector2 vectorTarget = (attackTarget.position - transform.parent.position);
 
-    private IEnumerator AttackAfterDelay()
-    {
-        yield return new WaitForSeconds(attackDelay);
-        this.Attack();
+        if (Math.Abs(vectorTarget.x) <= attackRange.x && Math.Abs(vectorTarget.y) <= attackRange.y)
+        {
+            this.attackTimer += Time.deltaTime;
+            if (this.attackTimer < attackDelay) return;
+            this.Attack();
+            attackTimer = 0f;
+        }   
     }
 
     private void Attack()
@@ -67,6 +80,7 @@ public class EnemyCombat : EnemyAbstract
                 this.Controller.DamageSender.SetHitPosOffset(hitOffSet);
                 this.Controller.DamageSender.SetDamage(damage);
                 this.Controller.DamageSender.Send(damageReceiver.transform);
+                SoundManager.Instance.PlaySound("Punch1");
                 isAttacking = false;
             }
         }
