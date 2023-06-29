@@ -58,4 +58,14 @@ public class SoundManager : GameMonoBehaviour
         Sound s = sounds.Find(sound => sound.name == name);
         s.source.PlayOneShot(s.clip, volumeScale);
     }
+
+    public void TurnOffMusic()
+    {
+        _musicSource.Stop();
+    }
+
+    public void TurnOnMusic()
+    {
+        _musicSource.Play();
+    }
 }

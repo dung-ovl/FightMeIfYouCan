@@ -9,7 +9,7 @@ public abstract class ObjectDamageReceiver : DamageReceiver
 
     [SerializeField] protected ObjectController objectController;
 
-    private float timeRemainOnDeath = 3f;
+    private float timeRemainOnDeath = 2f;
 
     protected override void LoadComponents()
     {
@@ -49,14 +49,14 @@ public abstract class ObjectDamageReceiver : DamageReceiver
 
     protected virtual IEnumerator FlashDeadthCoroutine()
     {
-        if (GameManager.Instance.CurrentEnemy != null && GameManager.Instance.CurrentEnemy == this.transform.parent) 
+        if (GameManager.Instance.CurrentEnemy != null && GameManager.Instance.CurrentEnemy == this.transform.parent)
         {
             GameManager.Instance.SetCurrentEnemy(null);
         }
         bool isVisible = true;
         float deathFlashTimer = 0f;
         yield return new WaitForSeconds(1f);
-        
+
         while (deathFlashTimer < timeRemainOnDeath)
         {
             deathFlashTimer += 0.1f;
@@ -64,7 +64,7 @@ public abstract class ObjectDamageReceiver : DamageReceiver
             isVisible = !isVisible;
             yield return new WaitForSeconds(0.1f);
         }
-        
+
     }
 
     public override void DeductHealthPoint(float hp)
@@ -77,5 +77,11 @@ public abstract class ObjectDamageReceiver : DamageReceiver
         }
         this.OnAnimationGetHit();
         this.objectController.StateManager.SetState(ObjectState.Hurt);
+    }
+
+    protected override void Reborn()
+    {
+        base.Reborn();
+        this.objectController.Sprite.enabled = true;
     }
 }

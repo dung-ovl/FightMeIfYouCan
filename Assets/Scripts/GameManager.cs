@@ -36,6 +36,7 @@ public class GameManager : GameMonoBehaviour
         base.Awake();
         if (GameManager.instance != null) Debug.LogError("Only 1 GameCtrl allow to exist");
         GameManager.instance = this;
+        SoundManager.Instance.TurnOnMusic();
     }
 
     protected override void LoadComponents()

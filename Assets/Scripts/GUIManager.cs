@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GUIManager : GameMonoBehaviour
@@ -29,8 +30,9 @@ public class GUIManager : GameMonoBehaviour
     {
         if (LevelManager.Instance.CurrentState == LevelState.Completed)
         {
+            endLevel.SetGamePlayStatus(GamePlayStatus.Win);
             endLevel.gameObject.SetActive(true);
-            endLevel.SetText("You Win! Congrat");
+            SoundManager.Instance.TurnOffMusic();
         }
     }
 
@@ -38,8 +40,16 @@ public class GUIManager : GameMonoBehaviour
     {
         if (GameManager.Instance.IsPlayerDead)
         {
+            endLevel.SetGamePlayStatus(GamePlayStatus.Lose);
             endLevel.gameObject.SetActive(true);
-            endLevel.SetText("Game Over!");
+            SoundManager.Instance.TurnOffMusic();
         }
+    }
+
+    private void SetTextActive(string text)
+    {
+        endLevel.gameObject.SetActive(true);
+        endLevel.SetText(text);
+        
     }
 }
