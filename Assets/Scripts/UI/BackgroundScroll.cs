@@ -5,36 +5,42 @@ using UnityEngine;
 
 public class BackgroundScroll : GameMonoBehaviour
 {
-    [SerializeField] protected float scrollSpeed = 0.05f;
+    [SerializeField] protected float scrollSpeed = 100f;
     [SerializeField] protected Vector3 startPos = Vector3.zero;
-    [SerializeField] protected Renderer meshRenderer;
+    [SerializeField] protected RectTransform rectTransform;
+    [SerializeField] protected float offSet = -1920f;
 
     protected override void LoadComponents()
     {
         base.LoadComponents();
         this.LoadMeshRenderer();
+        this.LoadStartPoint();
+    }
+
+    private void LoadStartPoint()
+    {
+        this.startPos = this.rectTransform.localPosition;
     }
 
     private void LoadMeshRenderer()
     {
-        if (this.meshRenderer != null) return;
-        this.meshRenderer = transform.GetComponent<MeshRenderer>();
-        Debug.Log(transform.name + ": LoadMeshRenderer", gameObject);
+        if (this.rectTransform != null) return;
+        this.rectTransform = transform.GetComponent<RectTransform>();
+        Debug.Log(transform.name + ": LoadRectTransform", gameObject);
     }
 
     private void Update()
     {
-        this.ScrollDown();
+        this.Scroll();
     }
 
-    protected virtual void ScrollDown()
+    protected virtual void Scroll()
     {
-        Vector3 offset = meshRenderer.material.mainTextureOffset;
-        float x_offset = scrollSpeed * Time.deltaTime;
-        offset += new Vector3(0, x_offset, 0);
-        meshRenderer.material.mainTextureOffset = offset;
-        /* transform.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
-         this.MoveOnTop();*/
+        this.rectTransform.localPosition += Vector3.left * scrollSpeed * Time.deltaTime;
+        if (this.rectTransform.localPosition.x <= offSet)
+        {
+            this.rectTransform.localPosition = Vector3.zero + this.startPos;
+        }
     }
 
     /*private void MoveOnTop()
