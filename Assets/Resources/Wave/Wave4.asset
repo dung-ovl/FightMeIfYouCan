@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waves:
   - name: Enemy_1
-    amount: 5
+    amount: 4
